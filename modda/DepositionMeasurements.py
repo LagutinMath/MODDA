@@ -2,6 +2,7 @@ import json
 import zipfile
 from dataclasses import dataclass
 from Wave import Wave
+from Design import Design
 from datetime import datetime
 import numpy as np
 import paths as config
@@ -17,15 +18,17 @@ class LayerMeasurements:
 
 
 class DepositionMeasurements:
-    def __init__(self, comment, date, measurements):
+    def __init__(self, comment, date, measurements, design):
         self.comment = comment
         self.date = date
+        self.design = design
         self.measurements = measurements
 
     @classmethod
     def from_dict(cls, data):
         comment = data['comment']
         date = datetime.strptime(data['date'], '%Y-%m-%d')
+        design = Design.from_dict(data['Design'])
         measurements = {}
         meas_data = data['measurements']
         for meas in meas_data:
@@ -38,7 +41,7 @@ class DepositionMeasurements:
                                                             t=np.array(meas['t']),
                                                             y_data=np.array(meas[type_of_y]),
                                                             type_of_y=type_of_y)
-        return cls(comment, date, measurements)
+        return cls(comment, date, measurements, design)
 
     @classmethod
     def from_dep(cls, file_path):

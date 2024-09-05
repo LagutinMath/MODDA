@@ -32,11 +32,12 @@ class MainWindow(QMainWindow):
         self.set_axis_style('left', 'Transmittance (abs)', axis_font, axis_pen, label_style)
 
         # Create scatter plot item
-        self.scatter = pg.ScatterPlotItem(size=5, pen=pg.mkPen(None), brush=pg.mkBrush(0, 0, 160))
-        self.plot_widget.addItem(self.scatter)
+        # scatter_plots = []
+        # self.scatter = pg.ScatterPlotItem(size=5, pen=pg.mkPen(None), brush=pg.mkBrush(0, 0, 200))
+        # self.plot_widget.addItem(self.scatter)
 
         # Initial data plot
-        self.create_data_plot()
+        self.init_data_plot()
 
     def set_axis_style(self, axis_name, label, font, pen, label_style):
         axis = self.plot_widget.getPlotItem().getAxis(axis_name)
@@ -45,20 +46,34 @@ class MainWindow(QMainWindow):
         axis.setStyle(tickFont=font)
         self.plot_widget.getPlotItem().setLabel(axis_name, label_style.format(label))
 
-    def create_data_plot(self):
+    def init_data_plot(self):
         # Load initial data and update scatter plot
         file_name = '24_03-AR_4_Zh.dep'
         dep_data = DepositionMeasurements.from_dep(os.path.join(meas_dir, file_name))
-        layer = 3
-        x_data = dep_data.measurements[layer].t
-        y_data = dep_data.measurements[layer].y_data
+        self.data_plot_from_dep_data(dep_data)
 
-        # Update scatter plot with data
-        self.update_data_plot(x_data, y_data)
+    def data_plot_from_dep_data(self, dep_data):
+        time_shift = 0
+        for layer in dep_data.measurements.keys():
+            x_data = dep_data.measurements[layer].t + time_shift
+            y_data = dep_data.measurements[layer].y_data
+            time_shift = x_data[-1]
 
-    def update_data_plot(self, x_data, y_data):
+            if dep_data.design.layer_role(layer) == 'H':
+                color = 'blue'
+            elif dep_data.design.layer_role(layer) == 'L':
+                color = 'red'
+            else:
+                color = 'black'
+
+            # Create a new ScatterPlotItem for each layer
+            scatter = pg.ScatterPlotItem(x=x_data, y=y_data, size=5, pen=pg.mkPen(None), brush=pg.mkBrush(color))
+            self.plot_widget.addItem(scatter)
+
+    def update_data_plot(self, dep_data):
         # Update scatter plot with new data
-        self.scatter.setData(x_data, y_data)
+        self.plot_widget.clear()
+        self.data_plot_from_dep_data(dep_data)
 
     def create_menu(self):
         # Create the menu bar and add File menu
@@ -77,9 +92,6 @@ class MainWindow(QMainWindow):
                                                    "Deposition Data Files (*.dep);;All Files (*)")
         if file_name:
             dep_data = DepositionMeasurements.from_dep(os.path.join(meas_dir, file_name))
-            layer = 1
-            x_data = dep_data.measurements[layer].t
-            y_data = dep_data.measurements[layer].y_data
 
-            # Update scatter plot with loaded data
-            self.update_data_plot(x_data, y_data)
+        # Update scatter plot with loaded data
+        self.update_data_plot(dep_data)

@@ -73,13 +73,17 @@ class Design:
     def xi_s(self, wavelen):
         return self._materials['substrate'].xi(wavelen)
 
+    def layer_role(self, j):
+        return self.structure[j]
+
 
 if __name__ == '__main__':
     des = Design.from_json('NF122')
-    print(des.name)
-    print(des.thicknesses)
-    print(des.structure)
-    print(des.n(1, 500))
+    # print(des.name)
+    # print(des.thicknesses)
+    # print(des.structure)
+    # print(des.n(1, 500))
+    print(des.layer_role(1))
 
     # Design.from_dict()
     # Design.from_json()
