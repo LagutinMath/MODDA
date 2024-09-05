@@ -18,32 +18,32 @@ class MainWindow(QMainWindow):
         self.layout = QVBoxLayout()
         self.central_widget.setLayout(self.layout)
 
-        # Initialize plot widget and scatter (to be updated later)
+        # Initialize plot widget with white background
         self.plot_widget = pg.PlotWidget(background='w')
         self.layout.addWidget(self.plot_widget)
 
-        # Set plot appearance
+        # Define styles
         axis_font = QFont('Times New Roman', 16)
+        label_style = "<span style='font-size: 16pt; font-family: Times New Roman; color: black;'>{}</span>"
+        axis_pen = pg.mkPen(color='black', width=2)
 
-        def styled_txt(txt):
-            return f"<span style='font-size: 16pt; font-family: Times New Roman; color: black;'>{txt}</span>"
+        # Apply styles to axes
+        self.set_axis_style('bottom', 'Time (s)', axis_font, axis_pen, label_style)
+        self.set_axis_style('left', 'Transmittance (abs)', axis_font, axis_pen, label_style)
 
-        self.plot_widget.getPlotItem().getAxis('bottom').setTextPen('black')
-        self.plot_widget.getPlotItem().getAxis('left').setTextPen('black')
-        self.plot_widget.getPlotItem().getAxis('bottom').setPen(pg.mkPen(color='black', width=2))
-        self.plot_widget.getPlotItem().getAxis('left').setPen(pg.mkPen(color='black', width=2))
-        self.plot_widget.getPlotItem().getAxis('bottom').setStyle(tickFont=axis_font)
-        self.plot_widget.getPlotItem().getAxis('left').setStyle(tickFont=axis_font)
-
-        self.plot_widget.getPlotItem().setLabel('left', styled_txt('Transmittance (abs)'))
-        self.plot_widget.getPlotItem().setLabel('bottom', styled_txt('Time (s)'))
-
-        # Create scatter plot item but do not set data yet
+        # Create scatter plot item
         self.scatter = pg.ScatterPlotItem(size=5, pen=pg.mkPen(None), brush=pg.mkBrush(0, 0, 160))
         self.plot_widget.addItem(self.scatter)
 
         # Initial data plot
         self.create_data_plot()
+
+    def set_axis_style(self, axis_name, label, font, pen, label_style):
+        axis = self.plot_widget.getPlotItem().getAxis(axis_name)
+        axis.setPen(pen)
+        axis.setTextPen('black')
+        axis.setStyle(tickFont=font)
+        self.plot_widget.getPlotItem().setLabel(axis_name, label_style.format(label))
 
     def create_data_plot(self):
         # Load initial data and update scatter plot
