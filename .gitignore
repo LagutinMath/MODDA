@@ -2,3 +2,4 @@
 .venv/
 .idea/
 experiments/
+modda/paths.json

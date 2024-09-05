@@ -5,6 +5,7 @@ from MainWindow import MainWindow
 
 def main():
     app = QApplication(sys.argv)
+    app.setApplicationName('MODDA')
     win = MainWindow()
     win.show()
     app.exec()
