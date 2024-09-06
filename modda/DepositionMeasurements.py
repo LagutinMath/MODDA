@@ -24,6 +24,17 @@ class DepositionMeasurements:
         self.design = design
         self.measurements = measurements
 
+        self.start_time = {}
+        self.final_time = {}
+
+        for layer in self.measurements.keys():
+            if layer == 1:
+                self.start_time[layer] = self.measurements[layer].t[0]
+                self.final_time[layer] = self.measurements[layer].t[-1]
+            else:
+                self.start_time[layer] = self.final_time[layer - 1]
+                self.final_time[layer] = self.measurements[layer].t[-1] + self.start_time[layer]
+
     @classmethod
     def from_dict(cls, data):
         comment = data['comment']
@@ -86,6 +97,11 @@ class DepositionMeasurements:
         except Exception as e:
             print(f"Error: {e}")
             return None
+
+    def get_consequent_data(self, layer):
+        x_data = self.measurements[layer].t + self.start_time[layer]
+        y_data = self.measurements[layer].y_data
+        return x_data, y_data
 
 
 if __name__ == '__main__':

@@ -43,11 +43,8 @@ class MainPlot(pg.PlotWidget):
         self.data_plot_from_dep_data(dep_data)
 
     def data_plot_from_dep_data(self, dep_data):
-        time_shift = 0
         for layer in dep_data.measurements.keys():
-            x_data = dep_data.measurements[layer].t + time_shift
-            y_data = dep_data.measurements[layer].y_data
-            time_shift = x_data[-1]
+            x_data, y_data = dep_data.get_consequent_data(layer)
 
             if dep_data.design.layer_role(layer) == 'H':
                 color = 'blue'

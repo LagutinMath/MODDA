@@ -40,7 +40,6 @@ class Design:
             data = json.load(file)
         return cls.from_dict(data)
 
-
     @staticmethod
     def get_roles(layers, materials_by_names):
         roles_list = list('HLABCDEF')
@@ -79,10 +78,10 @@ class Design:
 
 if __name__ == '__main__':
     des = Design.from_json('NF122')
-    # print(des.name)
-    # print(des.thicknesses)
-    # print(des.structure)
-    # print(des.n(1, 500))
+    print(des.name)
+    print(des.thicknesses)
+    print(des.structure)
+    print(des.n(1, 500))
     print(des.layer_role(1))
 
     # Design.from_dict()
