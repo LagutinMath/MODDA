@@ -1,0 +1,66 @@
+from PySide6.QtGui import QFont
+import pyqtgraph as pg
+from DepositionMeasurements import DepositionMeasurements
+from paths import meas_dir
+import os
+
+
+class MainPlot(pg.PlotWidget):
+    def __init__(self):
+        super().__init__()
+
+        # Set white background color
+        self.setBackground('w')
+
+        # Define styles
+        axis_font = QFont('Times New Roman', 16)
+        label_style = "<span style='font-size: 16pt; font-family: Times New Roman; color: black;'>{}</span>"
+        axis_pen = pg.mkPen(color='black', width=2)
+
+        # Apply styles to axes
+        self.set_axis_style('bottom', 'Time (s)', axis_font, axis_pen, label_style)
+        self.set_axis_style('left', 'Transmittance (abs)', axis_font, axis_pen, label_style)
+
+        # Create scatter plot item
+        # scatter_plots = []
+        # self.scatter = pg.ScatterPlotItem(size=5, pen=pg.mkPen(None), brush=pg.mkBrush(0, 0, 200))
+        # self.plot_widget.addItem(self.scatter)
+
+        # Initial data plot
+        self.init_data_plot()
+
+    def set_axis_style(self, axis_name, label, font, pen, label_style):
+        axis = self.getPlotItem().getAxis(axis_name)
+        axis.setPen(pen)
+        axis.setTextPen('black')
+        axis.setStyle(tickFont=font)
+        self.getPlotItem().setLabel(axis_name, label_style.format(label))
+
+    def init_data_plot(self):
+        # Load initial data and update scatter plot
+        file_name = '24_03-AR_4_Zh.dep'
+        dep_data = DepositionMeasurements.from_dep(os.path.join(meas_dir, file_name))
+        self.data_plot_from_dep_data(dep_data)
+
+    def data_plot_from_dep_data(self, dep_data):
+        time_shift = 0
+        for layer in dep_data.measurements.keys():
+            x_data = dep_data.measurements[layer].t + time_shift
+            y_data = dep_data.measurements[layer].y_data
+            time_shift = x_data[-1]
+
+            if dep_data.design.layer_role(layer) == 'H':
+                color = 'blue'
+            elif dep_data.design.layer_role(layer) == 'L':
+                color = 'red'
+            else:
+                color = 'black'
+
+            # Create a new ScatterPlotItem for each layer
+            scatter = pg.ScatterPlotItem(x=x_data, y=y_data, size=5, pen=pg.mkPen(None), brush=pg.mkBrush(color))
+            self.addItem(scatter)
+
+    def update_data_plot(self, dep_data):
+        # Update scatter plot with new data
+        self.clear()
+        self.data_plot_from_dep_data(dep_data)
