@@ -3,6 +3,7 @@ import pyqtgraph as pg
 from DepositionMeasurements import DepositionMeasurements
 from paths import meas_dir
 import os
+from BaseNonlocalModel import BaseNonlocalModel
 
 
 class MainPlot(pg.PlotWidget):
@@ -28,6 +29,7 @@ class MainPlot(pg.PlotWidget):
 
         # Initial data plot
         self.init_data_plot()
+        self.add_approx()
 
     def set_axis_style(self, axis_name, label, font, pen, label_style):
         axis = self.getPlotItem().getAxis(axis_name)
@@ -61,3 +63,11 @@ class MainPlot(pg.PlotWidget):
         # Update scatter plot with new data
         self.clear()
         self.data_plot_from_dep_data(dep_data)
+
+    def add_approx(self):
+        file_name = '24_03-AR_4_Zh.dep'
+        dep_data = DepositionMeasurements.from_dep(os.path.join(meas_dir, file_name))
+        model = BaseNonlocalModel.init_coef(dep_data, 1)
+        x_data, y_data = model.get_xy_data(dep_data.start_time[1], dep_data.final_time[1])
+        approx_plot = pg.PlotDataItem(x_data, y_data, pen=pg.mkPen(color='black', width=2))
+        self.addItem(approx_plot)

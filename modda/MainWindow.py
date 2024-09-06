@@ -22,6 +22,8 @@ class MainWindow(QMainWindow):
         self.plot_widget = MainPlot()
         self.layout.addWidget(self.plot_widget)
 
+
+
     def create_menu(self):
         # Create the menu bar and add File menu
         menubar = self.menuBar()
