@@ -12,6 +12,9 @@ class BaseNonlocalModel:
         # return 1. / (self.D * np.cos(2 * np.pi * self.rate * t / self.wavelength + self.theta) + self.gamma)
         return 1. / (self.D * np.cos(self.rate * t + self.theta) + self.gamma)
 
+    def update(self, *args):
+        self.D, self.theta, self.gamma, self.rate = args
+
     @classmethod
     def init_coef(cls, dep_data, layer):
         y_data = dep_data.measurements[layer].y_data

@@ -1,14 +1,13 @@
 from PySide6.QtGui import QFont
 import pyqtgraph as pg
-from DepositionMeasurements import DepositionMeasurements
-from paths import meas_dir
-import os
-from BaseNonlocalModel import BaseNonlocalModel
 
 
 class MainPlot(pg.PlotWidget):
-    def __init__(self):
+    def __init__(self, dep_data, model):
         super().__init__()
+
+        self.dep_data = dep_data
+        self.model = model
 
         # Set white background color
         self.setBackground('w')
@@ -28,8 +27,9 @@ class MainPlot(pg.PlotWidget):
         # self.plot_widget.addItem(self.scatter)
 
         # Initial data plot
-        self.init_data_plot()
-        self.add_approx()
+        self.update_data_plot(self.dep_data)
+
+        self.curve = self.add_model_curve()
 
     def set_axis_style(self, axis_name, label, font, pen, label_style):
         axis = self.getPlotItem().getAxis(axis_name)
@@ -37,12 +37,6 @@ class MainPlot(pg.PlotWidget):
         axis.setTextPen('black')
         axis.setStyle(tickFont=font)
         self.getPlotItem().setLabel(axis_name, label_style.format(label))
-
-    def init_data_plot(self):
-        # Load initial data and update scatter plot
-        file_name = '24_03-AR_4_Zh.dep'
-        dep_data = DepositionMeasurements.from_dep(os.path.join(meas_dir, file_name))
-        self.data_plot_from_dep_data(dep_data)
 
     def data_plot_from_dep_data(self, dep_data):
         for layer in dep_data.measurements.keys():
@@ -64,10 +58,11 @@ class MainPlot(pg.PlotWidget):
         self.clear()
         self.data_plot_from_dep_data(dep_data)
 
-    def add_approx(self):
-        file_name = '24_03-AR_4_Zh.dep'
-        dep_data = DepositionMeasurements.from_dep(os.path.join(meas_dir, file_name))
-        model = BaseNonlocalModel.init_coef(dep_data, 1)
-        x_data, y_data = model.get_xy_data(dep_data.start_time[1], dep_data.final_time[1])
-        approx_plot = pg.PlotDataItem(x_data, y_data, pen=pg.mkPen(color='black', width=2))
-        self.addItem(approx_plot)
+    def add_model_curve(self):
+        x_data, y_data = self.model.get_xy_data(self.dep_data.start_time[1], self.dep_data.final_time[1])
+        curve = pg.PlotDataItem(x_data, y_data, pen=pg.mkPen(color='black', width=5))
+        self.addItem(curve)
+        return curve
+
+    def update_curve(self, *args):
+        self.model.update(*args)

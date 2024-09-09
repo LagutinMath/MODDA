@@ -4,6 +4,7 @@ from DepositionMeasurements import DepositionMeasurements
 from paths import meas_dir
 import os
 from MainPlot import MainPlot
+from BaseNonlocalModel import BaseNonlocalModel
 
 
 class MainWindow(QMainWindow):
@@ -18,11 +19,18 @@ class MainWindow(QMainWindow):
         self.layout = QVBoxLayout()
         self.central_widget.setLayout(self.layout)
 
+        file_name = '24_03-AR_4_Zh.dep'
+        default_data = DepositionMeasurements.from_dep(os.path.join(meas_dir, file_name))
+        default_model = BaseNonlocalModel.init_coef(default_data, 1)
+
         # Initialize plot widget with white background
-        self.plot_widget = MainPlot()
+        self.dep_data = default_data
+        self.model = default_model
+        self.plot_widget = MainPlot(self.dep_data, self.model)
         self.layout.addWidget(self.plot_widget)
 
-
+        # self.sliders = ModelSliders()
+        # self.layout.addWidget(self.sliders)
 
     def create_menu(self):
         # Create the menu bar and add File menu
