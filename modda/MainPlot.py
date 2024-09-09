@@ -57,6 +57,7 @@ class MainPlot(pg.PlotWidget):
         # Update scatter plot with new data
         self.clear()
         self.data_plot_from_dep_data(dep_data)
+        # self.add_model_curve()
 
     def add_model_curve(self):
         x_data, y_data = self.model.get_xy_data(self.dep_data.start_time[1], self.dep_data.final_time[1])
@@ -64,5 +65,7 @@ class MainPlot(pg.PlotWidget):
         self.addItem(curve)
         return curve
 
-    def update_curve(self, *args):
-        self.model.update(*args)
+    def update_curve(self, kwargs):
+        self.model.update(kwargs)
+        x_data, y_data = self.model.get_xy_data(self.dep_data.start_time[1], self.dep_data.final_time[1])
+        self.curve.setData(x_data, y_data)

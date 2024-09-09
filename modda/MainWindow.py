@@ -5,6 +5,7 @@ from paths import meas_dir
 import os
 from MainPlot import MainPlot
 from BaseNonlocalModel import BaseNonlocalModel
+from ModelSliders import ModelSliders
 
 
 class MainWindow(QMainWindow):
@@ -29,8 +30,8 @@ class MainWindow(QMainWindow):
         self.plot_widget = MainPlot(self.dep_data, self.model)
         self.layout.addWidget(self.plot_widget)
 
-        # self.sliders = ModelSliders()
-        # self.layout.addWidget(self.sliders)
+        self.sliders = ModelSliders(self.plot_widget)
+        self.layout.addWidget(self.sliders)
 
     def create_menu(self):
         # Create the menu bar and add File menu
