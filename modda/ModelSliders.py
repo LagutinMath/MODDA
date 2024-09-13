@@ -22,21 +22,45 @@ class ModelSliders(QWidget):
 
     def create_sliders(self):
         sliders = dict()
-        model_vars = self.plot_widget.model.__dict__.copy()
-        for variable in model_vars:
-            sliders[variable] = LabeledSlider(QLabel(""),
+        model_data = self.plot_widget.model.__dict__.copy()
+        model_param = self.plot_widget.model.get_param()
+        for variable in model_param:
+            sliders[variable] = LabeledSlider(QLabel(model_param[variable]['name']),
                                               QSlider(Qt.Horizontal))
 
-            sliders[variable].slider.setRange(0, 100)
-            sliders[variable].slider.setValue(10)
-            sliders[variable].label.setText(f"{variable} = "
-                                            f"{model_vars[variable] * sliders[variable].slider.value() / 10.0:.3f}")
+            num_steps = 1000
+
+
+
+            sliders[variable].slider.setRange(1, num_steps)
+            init_position = self.to_slider_value(model_data[variable], variable, model_param, num_steps)
+            sliders[variable].slider.setValue(init_position)
+
+            sliders[variable].label.setText(f"{model_param[variable]['name']} = "
+                                            f"{self.from_slider_value(init_position, variable, model_param, num_steps)
+                                            :.{model_param[variable]['prec']}f}")
 
             sliders[variable].slider.valueChanged.connect(lambda value, var=variable:
                                                           sliders[var].label.setText(
-                                                              f"{var} = {model_vars[var] * value / 10.0:.3f}"))
+                                                              f"{model_param[var]['name']} = "
+                                                              f"{self.from_slider_value(value, var, model_param, num_steps)
+                                                              :.{model_param[var]['prec']}f}"
+                                                          ))
 
             sliders[variable].slider.valueChanged.connect(lambda value, var=variable:
-                                                          self.plot_widget.update_curve({var: (model_vars[var] * value / 10.0)}))
+                                                          self.plot_widget.update_curve(
+                                                              {var: self.from_slider_value(value, var, model_param, num_steps)}))
 
         return sliders
+
+    @staticmethod
+    def to_slider_value(x, variable, model_param, num_steps):
+        lb = model_param[variable]['lb']
+        rb = model_param[variable]['rb']
+        return round(((rb - x) + num_steps * (x - lb)) / (rb - lb))
+
+    @staticmethod
+    def from_slider_value(n, variable, model_param, num_steps):
+        lb = model_param[variable]['lb']
+        rb = model_param[variable]['rb']
+        return (lb * (num_steps - n) + rb * (n - 1)) / (num_steps - 1)

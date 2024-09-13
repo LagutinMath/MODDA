@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class BaseNonlocalModel:
     def __init__(self, D, theta, gamma, rate, wavelength):
         self.D = D
@@ -7,6 +8,12 @@ class BaseNonlocalModel:
         self.gamma = gamma
         self.rate = rate
         self.wavelength = wavelength
+
+    def get_param(self):
+        return {'D': {'name': 'D', 'lb': 0, 'rb': 1, 'prec': 2},
+                'theta': {'name': 'theta', 'lb': 0, 'rb': 2 * np.pi, 'prec': 2},
+                'gamma': {'name': 'gamma', 'lb': 0, 'rb': 2, 'prec': 4},
+                'rate': {'name': 'rate', 'lb': 0., 'rb': 0.01, 'prec': 4}}
 
     def T(self, t):
         # return 1. / (self.D * np.cos(2 * np.pi * self.rate * t / self.wavelength + self.theta) + self.gamma)
@@ -17,7 +24,7 @@ class BaseNonlocalModel:
             self.__dict__[kwarg] = kwargs[kwarg]
 
     @classmethod
-    def init_coef(cls, dep_data, layer):
+    def init_coef(cls, dep_data, layer=1):
         y_data = dep_data.measurements[layer].y_data
 
         T_min = min(y_data)

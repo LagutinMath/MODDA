@@ -22,7 +22,7 @@ class MainWindow(QMainWindow):
 
         file_name = '24_03-AR_4_Zh.dep'
         default_data = DepositionMeasurements.from_dep(os.path.join(meas_dir, file_name))
-        default_model = BaseNonlocalModel.init_coef(default_data, 1)
+        default_model = BaseNonlocalModel.init_coef(default_data, 3)
 
         # Initialize plot widget with white background
         self.dep_data = default_data

@@ -21,11 +21,6 @@ class MainPlot(pg.PlotWidget):
         self.set_axis_style('bottom', 'Time (s)', axis_font, axis_pen, label_style)
         self.set_axis_style('left', 'Transmittance (abs)', axis_font, axis_pen, label_style)
 
-        # Create scatter plot item
-        # scatter_plots = []
-        # self.scatter = pg.ScatterPlotItem(size=5, pen=pg.mkPen(None), brush=pg.mkBrush(0, 0, 200))
-        # self.plot_widget.addItem(self.scatter)
-
         # Initial data plot
         self.update_data_plot(self.dep_data)
 
@@ -60,12 +55,14 @@ class MainPlot(pg.PlotWidget):
         # self.add_model_curve()
 
     def add_model_curve(self):
-        x_data, y_data = self.model.get_xy_data(self.dep_data.start_time[1], self.dep_data.final_time[1])
+        x_data, y_data = self.model.get_xy_data(self.dep_data.start_time[1],
+                                                self.dep_data.final_time[self.dep_data.design.N])
         curve = pg.PlotDataItem(x_data, y_data, pen=pg.mkPen(color='black', width=5))
         self.addItem(curve)
         return curve
 
     def update_curve(self, kwargs):
         self.model.update(kwargs)
-        x_data, y_data = self.model.get_xy_data(self.dep_data.start_time[1], self.dep_data.final_time[1])
+        x_data, y_data = self.model.get_xy_data(self.dep_data.start_time[1],
+                                                self.dep_data.final_time[self.dep_data.design.N])
         self.curve.setData(x_data, y_data)
