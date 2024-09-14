@@ -1,37 +1,37 @@
-from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QFileDialog)
+from PySide6.QtWidgets import QMainWindow, QSplitter
 from PySide6.QtGui import QAction
-from modda.data_handler.DepositionMeasurements import DepositionMeasurements
-from modda.paths import meas_dir
-import os
-from modda.gui.MainPlot import MainPlot
-from modda.data_handler.BaseNonlocalModel import BaseNonlocalModel
-from modda.gui.ModelSliders import ModelSliders
+from PySide6.QtCore import Qt
+from modda.gui.MainPlotSection import MainPlotSection
+from modda.gui.ModelSection import ModelSection
+from modda.gui.ExtraInfoSection import ExtraInfoSection
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        # Create layout and menu
+        # Create menu
         self.create_menu()
 
-        self.central_widget = QWidget()
-        self.setCentralWidget(self.central_widget)
-        self.layout = QVBoxLayout()
-        self.central_widget.setLayout(self.layout)
+        # Create the main splitter for layout
+        main_splitter = QSplitter(Qt.Horizontal)
+        self.setCentralWidget(main_splitter)
 
-        file_name = '24_03-AR_4_Zh.dep'
-        default_data = DepositionMeasurements.from_dep(os.path.join(meas_dir, file_name))
-        default_model = BaseNonlocalModel.init_coef(default_data, 3)
+        # Left-side (main plot and model sections)
+        left_splitter = QSplitter(Qt.Vertical)
+        main_splitter.addWidget(left_splitter)
 
-        # Initialize plot widget with white background
-        self.dep_data = default_data
-        self.model = default_model
-        self.plot_widget = MainPlot(self.dep_data, self.model)
-        self.layout.addWidget(self.plot_widget)
+        # Main Plot Section
+        self.main_plot_section = MainPlotSection()
+        left_splitter.addWidget(self.main_plot_section)
 
-        self.sliders = ModelSliders(self.plot_widget)
-        self.layout.addWidget(self.sliders)
+        # Model Section (with scroll)
+        self.model_section = ModelSection()
+        left_splitter.addWidget(self.model_section)
+
+        # Extra Info Section (with scroll)
+        self.extra_info_section = ExtraInfoSection()
+        main_splitter.addWidget(self.extra_info_section)
 
     def create_menu(self):
         # Create the menu bar and add File menu
@@ -45,11 +45,4 @@ class MainWindow(QMainWindow):
         file_menu.addAction(load_action)
 
     def load_file(self):
-        # Open file dialog and load selected data
-        file_name, _ = QFileDialog.getOpenFileName(self, "Open File", meas_dir,
-                                                   "Deposition Data Files (*.dep);;All Files (*)")
-        if file_name:
-            dep_data = DepositionMeasurements.from_dep(os.path.join(meas_dir, file_name))
-
-            # Update scatter plot with loaded data
-            self.plot_widget.update_data_plot(dep_data)
+        pass
