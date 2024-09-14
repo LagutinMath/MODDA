@@ -3,11 +3,10 @@ import pyqtgraph as pg
 
 
 class MainPlot(pg.PlotWidget):
-    def __init__(self, dep_data, model):
+    def __init__(self, program_data):
         super().__init__()
 
-        self.dep_data = dep_data
-        self.model = model
+        self.program_data = program_data
 
         # Set white background color
         self.setBackground('w')
@@ -22,9 +21,10 @@ class MainPlot(pg.PlotWidget):
         self.set_axis_style('left', 'Transmittance (abs)', axis_font, axis_pen, label_style)
 
         # Initial data plot
-        self.update_data_plot(self.dep_data)
+        if self.program_data.dep_data is not None:
+            self.update_data_plot()
 
-        self.curve = self.add_model_curve()
+        # self.curve = self.add_model_curve()
 
     def set_axis_style(self, axis_name, label, font, pen, label_style):
         axis = self.getPlotItem().getAxis(axis_name)
@@ -33,13 +33,13 @@ class MainPlot(pg.PlotWidget):
         axis.setStyle(tickFont=font)
         self.getPlotItem().setLabel(axis_name, label_style.format(label))
 
-    def data_plot_from_dep_data(self, dep_data):
-        for layer in dep_data.measurements.keys():
-            x_data, y_data = dep_data.get_consequent_data(layer)
+    def add_data_plot(self):
+        for layer in self.program_data.dep_data.measurements.keys():
+            x_data, y_data = self.program_data.dep_data.get_consequent_data(layer)
 
-            if dep_data.design.layer_role(layer) == 'H':
+            if self.program_data.dep_data.design.layer_role(layer) == 'H':
                 color = 'blue'
-            elif dep_data.design.layer_role(layer) == 'L':
+            elif self.program_data.dep_data.design.layer_role(layer) == 'L':
                 color = 'red'
             else:
                 color = 'black'
@@ -48,21 +48,21 @@ class MainPlot(pg.PlotWidget):
             scatter = pg.ScatterPlotItem(x=x_data, y=y_data, size=5, pen=pg.mkPen(None), brush=pg.mkBrush(color))
             self.addItem(scatter)
 
-    def update_data_plot(self, dep_data):
+    def update_data_plot(self):
         # Update scatter plot with new data
         self.clear()
-        self.data_plot_from_dep_data(dep_data)
+        self.add_data_plot()
         # self.add_model_curve()
 
-    def add_model_curve(self):
-        x_data, y_data = self.model.get_xy_data(self.dep_data.start_time[1],
-                                                self.dep_data.final_time[self.dep_data.design.N])
-        curve = pg.PlotDataItem(x_data, y_data, pen=pg.mkPen(color='black', width=5))
-        self.addItem(curve)
-        return curve
-
-    def update_curve(self, kwargs):
-        self.model.update(kwargs)
-        x_data, y_data = self.model.get_xy_data(self.dep_data.start_time[1],
-                                                self.dep_data.final_time[self.dep_data.design.N])
-        self.curve.setData(x_data, y_data)
+    # def add_model_curve(self):
+    #     x_data, y_data = self.model.get_xy_data(self.dep_data.start_time[1],
+    #                                             self.dep_data.final_time[self.dep_data.design.N])
+    #     curve = pg.PlotDataItem(x_data, y_data, pen=pg.mkPen(color='black', width=5))
+    #     self.addItem(curve)
+    #     return curve
+    #
+    # def update_curve(self, kwargs):
+    #     self.model.update(kwargs)
+    #     x_data, y_data = self.model.get_xy_data(self.dep_data.start_time[1],
+    #                                             self.dep_data.final_time[self.dep_data.design.N])
+    #     self.curve.setData(x_data, y_data)

@@ -1,14 +1,19 @@
-from PySide6.QtWidgets import QMainWindow, QSplitter
+from PySide6.QtWidgets import QMainWindow, QSplitter, QFileDialog
 from PySide6.QtGui import QAction
 from PySide6.QtCore import Qt
+from os.path import join
 from modda.gui.MainPlotSection import MainPlotSection
 from modda.gui.ModelSection import ModelSection
 from modda.gui.ExtraInfoSection import ExtraInfoSection
+from modda.data_handler.DepositionMeasurements import DepositionMeasurements
+from modda.paths import meas_dir
 
 
 class MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, program_data):
         super().__init__()
+
+        self.program_data = program_data
 
         # Create menu
         self.create_menu()
@@ -22,7 +27,7 @@ class MainWindow(QMainWindow):
         main_splitter.addWidget(left_splitter)
 
         # Main Plot Section
-        self.main_plot_section = MainPlotSection()
+        self.main_plot_section = MainPlotSection(self.program_data)
         left_splitter.addWidget(self.main_plot_section)
 
         # Model Section (with scroll)
@@ -45,4 +50,13 @@ class MainWindow(QMainWindow):
         file_menu.addAction(load_action)
 
     def load_file(self):
-        pass
+        # Open file dialog and load selected data
+        file_name, _ = QFileDialog.getOpenFileName(self, "Open File", meas_dir,
+                                                   "Deposition Data Files (*.dep);;All Files (*)")
+        if file_name:
+            dep_data = DepositionMeasurements.from_dep(join(meas_dir, file_name))
+
+            self.program_data.update_dep_data(dep_data)
+
+            # Update scatter plot with loaded data
+            self.main_plot_section.plot.update_data_plot()
