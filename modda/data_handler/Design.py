@@ -1,8 +1,8 @@
 import numpy as np
 import os.path
 import json
-from Material import Material
-import paths as config
+from modda.data_handler.Material import Material
+import modda.paths as config
 
 
 class Design:
