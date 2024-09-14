@@ -1,11 +1,10 @@
 import json
 import zipfile
 from dataclasses import dataclass
-from Wave import Wave
-from Design import Design
+from modda.data_handler.Wave import Wave
+from modda.data_handler.Design import Design
 from datetime import datetime
 import numpy as np
-import paths as config
 
 
 @dataclass
@@ -102,8 +101,3 @@ class DepositionMeasurements:
         x_data = self.measurements[layer].t + self.start_time[layer]
         y_data = self.measurements[layer].y_data
         return x_data, y_data
-
-
-if __name__ == '__main__':
-    ms = DepositionMeasurements.from_dep(config.meas_dir + '/' + '24_03-AR_4_Zh.dep')
-    print(ms.measurements[1].layer)

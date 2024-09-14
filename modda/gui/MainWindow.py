@@ -1,11 +1,11 @@
 from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QFileDialog)
 from PySide6.QtGui import QAction
-from DepositionMeasurements import DepositionMeasurements
-from paths import meas_dir
+from modda.data_handler.DepositionMeasurements import DepositionMeasurements
+from modda.paths import meas_dir
 import os
-from MainPlot import MainPlot
-from BaseNonlocalModel import BaseNonlocalModel
-from ModelSliders import ModelSliders
+from modda.gui.MainPlot import MainPlot
+from modda.data_handler.BaseNonlocalModel import BaseNonlocalModel
+from modda.gui.ModelSliders import ModelSliders
 
 
 class MainWindow(QMainWindow):

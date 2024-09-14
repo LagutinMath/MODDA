@@ -2,7 +2,7 @@ import json
 import os
 
 try:
-    with open('paths.json') as file:
+    with open('resources/paths.json') as file:
         paths = json.load(file)
 except Exception as e:
     print(e)

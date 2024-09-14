@@ -1,6 +1,6 @@
 import sys
 from PySide6.QtWidgets import QApplication
-from MainWindow import MainWindow
+from modda.gui.MainWindow import MainWindow
 
 
 def main():

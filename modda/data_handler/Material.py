@@ -1,9 +1,9 @@
 import json
 import scipy
 import numpy as np
-from tools import timer
+from modda.tools import timer
 import os
-from paths import des_dir
+from modda.paths import des_dir
 
 
 class Material:
