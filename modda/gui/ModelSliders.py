@@ -6,10 +6,9 @@ LabeledSlider = namedtuple('LabeledSlider', ['label', 'slider'])
 
 
 class ModelSliders(QWidget):
-    def __init__(self, plot_widget):
+    def __init__(self, program_data):
         super().__init__()
-
-        self.plot_widget = plot_widget
+        self.program_data = program_data
 
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
@@ -22,15 +21,13 @@ class ModelSliders(QWidget):
 
     def create_sliders(self):
         sliders = dict()
-        model_data = self.plot_widget.model.__dict__.copy()
-        model_param = self.plot_widget.model.get_param()
+        model_data = self.program_data.models[0].__dict__.copy()
+        model_param = self.program_data.models[0].get_param()
         for variable in model_param:
             sliders[variable] = LabeledSlider(QLabel(model_param[variable]['name']),
                                               QSlider(Qt.Horizontal))
 
             num_steps = 1000
-
-
 
             sliders[variable].slider.setRange(1, num_steps)
             init_position = self.to_slider_value(model_data[variable], variable, model_param, num_steps)
@@ -47,9 +44,15 @@ class ModelSliders(QWidget):
                                                               :.{model_param[var]['prec']}f}"
                                                           ))
 
+            # sliders[variable].slider.valueChanged.connect(lambda value, var=variable:
+            #                                               self.plot_widget.update_curve(
+            #                                                   {var: self.from_slider_value(value, var, model_param, num_steps)}))
+
             sliders[variable].slider.valueChanged.connect(lambda value, var=variable:
-                                                          self.plot_widget.update_curve(
-                                                              {var: self.from_slider_value(value, var, model_param, num_steps)}))
+                                                          self.program_data.model_changed.emit({var: self.from_slider_value(value,
+                                                                                                               var,
+                                                                                                               model_param,
+                                                                                                               num_steps)}))
 
         return sliders
 
