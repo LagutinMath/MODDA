@@ -12,12 +12,7 @@ class ModelSection(QWidget):
         self.main_layout.setSpacing(0)
 
         # Add toggle button
-        self.toggle_button = QToolButton()
-        self.toggle_button.setArrowType(Qt.DownArrow)
-        self.toggle_button.setFixedHeight(10)
-        self.toggle_button.setFixedWidth(100)
-        self.toggle_button.clicked.connect(self.toggle_sections)
-        self.main_layout.addWidget(self.toggle_button, alignment=Qt.AlignTop | Qt.AlignHCenter)
+        self.toggle_button = self.add_toggle_button()
 
         # Create the scroll area for the content
         self.scroll_area = QScrollArea()
@@ -36,6 +31,15 @@ class ModelSection(QWidget):
 
         # Add the scroll area to the main layout
         self.main_layout.addWidget(self.scroll_area)
+
+    def add_toggle_button(self):
+        toggle_button = QToolButton()
+        toggle_button.setArrowType(Qt.DownArrow)
+        toggle_button.setFixedHeight(10)
+        toggle_button.setFixedWidth(100)
+        toggle_button.clicked.connect(self.toggle_sections)
+        self.main_layout.addWidget(toggle_button, alignment=Qt.AlignTop | Qt.AlignHCenter)
+        return toggle_button
 
     def toggle_sections(self):
         if self.scroll_area.isVisible():
