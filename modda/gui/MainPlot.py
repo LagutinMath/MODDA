@@ -24,7 +24,10 @@ class MainPlot(pg.PlotWidget):
         if self.program_data.dep_data is not None:
             self.update_data_plot()
 
-        # self.curve = self.add_model_curve()
+        self.curve = None
+
+        # Add approximation curve corresponding the model
+        self.program_data.model_changed.connect(self.update_curve)
 
     def set_axis_style(self, axis_name, label, font, pen, label_style):
         axis = self.getPlotItem().getAxis(axis_name)
@@ -61,8 +64,12 @@ class MainPlot(pg.PlotWidget):
     #     self.addItem(curve)
     #     return curve
     #
-    # def update_curve(self, kwargs):
-    #     self.model.update(kwargs)
-    #     x_data, y_data = self.model.get_xy_data(self.dep_data.start_time[1],
-    #                                             self.dep_data.final_time[self.dep_data.design.N])
-    #     self.curve.setData(x_data, y_data)
+    def update_curve(self, kwargs):
+        self.program_data.models[0].update(kwargs)
+        x_data, y_data = self.program_data.models[0].get_xy_data(self.program_data.dep_data.start_time[1],
+                                                self.program_data.dep_data.final_time[self.program_data.dep_data.design.N])
+        if self.curve is None:
+            self.curve = pg.PlotDataItem(x_data, y_data, pen=pg.mkPen(color='black', width=5))
+            self.addItem(self.curve)
+        else:
+            self.curve.setData(x_data, y_data)

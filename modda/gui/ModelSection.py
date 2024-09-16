@@ -1,10 +1,14 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QToolButton, QLabel, QScrollArea, QSizePolicy
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QToolButton, QLabel, QScrollArea, QPushButton
 from PySide6.QtCore import Qt
+from modda.data_handler.BaseNonlocalModel import BaseNonlocalModel
+from modda.gui.ModelSliders import ModelSliders
 
 
 class ModelSection(QWidget):
-    def __init__(self):
+    def __init__(self, program_data):
         super().__init__()
+
+        self.program_data = program_data
 
         # Create the main layout for the whole section (including button and scroll area)
         self.main_layout = QVBoxLayout(self)
@@ -12,12 +16,7 @@ class ModelSection(QWidget):
         self.main_layout.setSpacing(0)
 
         # Add toggle button
-        self.toggle_button = QToolButton()
-        self.toggle_button.setArrowType(Qt.DownArrow)
-        self.toggle_button.setFixedHeight(10)
-        self.toggle_button.setFixedWidth(100)
-        self.toggle_button.clicked.connect(self.toggle_sections)
-        self.main_layout.addWidget(self.toggle_button, alignment=Qt.AlignTop | Qt.AlignHCenter)
+        self.toggle_button = self.add_toggle_button()
 
         # Create the scroll area for the content
         self.scroll_area = QScrollArea()
@@ -27,15 +26,41 @@ class ModelSection(QWidget):
         self.content_container = QWidget()
         self.content_layout = QVBoxLayout(self.content_container)
 
-        # Example content added to the scroll area
-        self.label = QLabel("Test label")
-        self.content_layout.addWidget(self.label)
+        # Add button to add model
+        self.new_model_button = self.add_new_model_button()
 
         # Set the content container as the scroll area's widget
         self.scroll_area.setWidget(self.content_container)
 
         # Add the scroll area to the main layout
         self.main_layout.addWidget(self.scroll_area)
+
+    def add_new_model_button(self):
+        button = QPushButton("Add model")
+        self.content_layout.addWidget(button)
+        button.clicked.connect(self.add_model)
+        return button
+
+    def add_model(self):
+        # Load model
+        model = BaseNonlocalModel.init_coef(self.program_data.dep_data, 3)
+        self.program_data.models.append(model)
+
+        # Add sliders
+        sliders = ModelSliders(self.program_data)
+        self.content_layout.addWidget(sliders)
+
+        # Hide button after setting model
+        self.new_model_button.hide()
+
+    def add_toggle_button(self):
+        toggle_button = QToolButton()
+        toggle_button.setArrowType(Qt.DownArrow)
+        toggle_button.setFixedHeight(10)
+        toggle_button.setFixedWidth(100)
+        toggle_button.clicked.connect(self.toggle_sections)
+        self.main_layout.addWidget(toggle_button, alignment=Qt.AlignTop | Qt.AlignHCenter)
+        return toggle_button
 
     def toggle_sections(self):
         if self.scroll_area.isVisible():

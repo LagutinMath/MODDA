@@ -31,7 +31,7 @@ class MainWindow(QMainWindow):
         left_splitter.addWidget(self.main_plot_section)
 
         # Model Section (with scroll)
-        self.model_section = ModelSection()
+        self.model_section = ModelSection(self.program_data)
         left_splitter.addWidget(self.model_section)
 
         # Extra Info Section (with scroll)
