@@ -1,6 +1,6 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QToolButton, QLabel, QScrollArea, QPushButton
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QToolButton, QScrollArea, QPushButton
 from PySide6.QtCore import Qt
-from modda.data_handler.BaseNonlocalModel import BaseNonlocalModel
+from modda.data_handler.InvCosModel import InvCosModel
 from modda.gui.ModelSliders import ModelSliders
 
 
@@ -43,7 +43,8 @@ class ModelSection(QWidget):
 
     def add_model(self):
         # Load model
-        model = BaseNonlocalModel.init_coef(self.program_data.dep_data, 3)
+        # model = BaseNonlocalModel.init_coef(self.program_data.dep_data, 3)
+        model = InvCosModel.init_coef(self.program_data.dep_data, 3)
         self.program_data.models.append(model)
 
         # Add sliders

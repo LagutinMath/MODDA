@@ -66,8 +66,7 @@ class MainPlot(pg.PlotWidget):
     #
     def update_curve(self, kwargs):
         self.program_data.models[0].update(kwargs)
-        x_data, y_data = self.program_data.models[0].get_xy_data(self.program_data.dep_data.start_time[1],
-                                                self.program_data.dep_data.final_time[self.program_data.dep_data.design.N])
+        x_data, y_data = self.program_data.models[0].calc_ltr()
         if self.curve is None:
             self.curve = pg.PlotDataItem(x_data, y_data, pen=pg.mkPen(color='black', width=5))
             self.addItem(self.curve)

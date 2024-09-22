@@ -44,10 +44,6 @@ class ModelSliders(QWidget):
                                                               :.{model_param[var]['prec']}f}"
                                                           ))
 
-            # sliders[variable].slider.valueChanged.connect(lambda value, var=variable:
-            #                                               self.plot_widget.update_curve(
-            #                                                   {var: self.from_slider_value(value, var, model_param, num_steps)}))
-
             sliders[variable].slider.valueChanged.connect(lambda value, var=variable:
                                                           self.program_data.model_changed.emit({var: self.from_slider_value(value,
                                                                                                                var,

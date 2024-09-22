@@ -101,3 +101,15 @@ class DepositionMeasurements:
         x_data = self.measurements[layer].t + self.start_time[layer]
         y_data = self.measurements[layer].y_data
         return x_data, y_data
+
+    def get_consequent_x_data(self, layer):
+        x_data = self.measurements[layer].t + self.start_time[layer]
+        return x_data
+
+    def get_whole_time_range(self):
+        range_list = list()
+        range_list.append(self.get_consequent_x_data(1))
+        if self.design.N > 1:
+            for layer in range(2, self.design.N + 1):
+                range_list.append(self.get_consequent_x_data(layer)[1:])
+        return np.concatenate(range_list, axis=None)
